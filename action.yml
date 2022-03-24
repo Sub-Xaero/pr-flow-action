@@ -1,0 +1,18 @@
+name: 'PR Flow'
+description: 'Manage various PR interactions'
+inputs:
+  reviewLabel:
+    required: true
+    description: 'Label to apply to PRs that are ready for review'
+  approvedLabel:
+    required: true
+    description: 'Label to apply to PRs that are approved'
+  changesRequestedLabel:
+    required: true
+    description: 'Label to apply to PRs that request changes'
+  changedSinceLastReviewLabel:
+    required: true
+    description: 'Label to apply to PRs that have changed since the last review'
+runs:
+  using: 'node16'
+  main: 'index.ts'

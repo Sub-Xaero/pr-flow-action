@@ -1,0 +1,19 @@
+{
+  "name": "pr-flow-action",
+  "version": "0.1",
+  "main": "index.ts",
+  "author": "Sub-Xaero",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23"
+  }
+}
