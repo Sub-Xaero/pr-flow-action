@@ -54,7 +54,7 @@ class PRFlowAction {
 
   async removePRLabels(labels: Array<string | undefined>) {
     labels = labels.filter(label => label !== undefined);
-    core.info(`removingLabels: ${labels.join(",")}`);
+    console.log(`removingLabels: ${labels.join(",")}`);
     for (let label in labels) {
       if (!label) {
         continue;
@@ -75,7 +75,7 @@ class PRFlowAction {
 
   async addPRLabels(labels: Array<string | undefined>) {
     let newLabels = labels.filter((label) => label) as string[];
-    core.info(`addingLabels: ${newLabels.join(",")}`);
+    console.log(`addingLabels: ${newLabels.join(",")}`);
 
     try {
       await this.octokit.rest.issues.addLabels({
@@ -107,10 +107,10 @@ class PRFlowAction {
     switch (context.eventName) {
       case 'pull_request':
         if (contextAction === 'opened') {
-          core.info(`PR opened`);
+          console.log(`PR opened`);
           // await action.addPRLabels([labels.review]);
         } else if (contextAction === 'closed') {
-          core.info(`PR closed, removing labels`);
+          console.log(`PR closed, removing labels`);
           await action.removePRLabels([
             labels.review,
             labels.approved,
@@ -118,7 +118,7 @@ class PRFlowAction {
             labels.changedSinceLastReview,
           ]);
         } else if (contextAction === 'review_requested') {
-          core.info("reviewRequested: updating labels");
+          console.log("reviewRequested: updating labels");
           await action.addPRLabels([labels.review]);
           await action.removePRLabels([
             labels.approved,
@@ -130,24 +130,24 @@ class PRFlowAction {
           // If PR previously reviewed
           if (await action.previouslyReviewed()) {
             // If PR has changed since last review
-            core.info("synchronize: updating labels");
+            console.log("synchronize: updating labels");
             await action.addPRLabels([labels.changedSinceLastReview]);
           }
         }
         break;
       case "pull_request_review":
         // If the review is approved, remove the for-review label
-        core.info("pull_request: updating labels");
+        console.log("pull_request: updating labels");
         await action.removePRLabels([labels.review, labels.changedSinceLastReview]);
         if (context.payload.review.state === "APPROVED") {
-          core.info("pull_request_review approved: updating labels");
+          console.log("pull_request_review approved: updating labels");
           await action.addPRLabels([labels.approved]);
         } else if (context.payload.review.state === "CHANGES_REQUESTED") {
-          core.info("pull_request_review changes_requested: updating labels");
+          console.log("pull_request_review changes_requested: updating labels");
           // If the review is changes requested, remove the for-review label
           await action.addPRLabels([labels.changesRequested]);
         } else {
-          core.info(`pull_request_review other state: ${context.payload.review.state}`);
+          console.log(`pull_request_review other state: ${context.payload.review.state}`);
         }
         break;
       default:
