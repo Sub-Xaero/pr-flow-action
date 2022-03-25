@@ -90,6 +90,8 @@ class PRFlowAction {
   }
 }
 
+console.log(`Booting...`);
+
 (async () => {
   try {
     let action = new PRFlowAction();
@@ -151,6 +153,7 @@ class PRFlowAction {
         }
         break;
       default:
+        console.log(`Unknown event: ${context.eventName}`);
         // core.setFailed(`Unsupported event: ${context.eventName}`);
         break;
     }
