@@ -130,10 +130,6 @@ class PRFlowAction {
           await action.addPRLabels([labels.changesRequested]);
         }
         break;
-      case "issue_comment":
-
-
-        break;
       default:
         // core.setFailed(`Unsupported event: ${context.eventName}`);
         break;
