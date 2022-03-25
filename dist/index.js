@@ -77,6 +77,8 @@ class PRFlowAction {
     }
     removePRLabels(labels) {
         return __awaiter(this, void 0, void 0, function* () {
+            labels = labels.filter(label => label !== undefined);
+            console.log(`removingLabels: ${labels.join(",")}`);
             for (let label in labels) {
                 if (!label) {
                     continue;
@@ -98,6 +100,7 @@ class PRFlowAction {
     addPRLabels(labels) {
         return __awaiter(this, void 0, void 0, function* () {
             let newLabels = labels.filter((label) => label);
+            console.log(`addingLabels: ${newLabels.join(",")}`);
             try {
                 yield this.octokit.rest.issues.addLabels({
                     owner: this.repoOwner,
@@ -112,6 +115,7 @@ class PRFlowAction {
         });
     }
 }
+console.log(`Booting...`);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let action = new PRFlowAction();
@@ -127,9 +131,11 @@ class PRFlowAction {
         switch (context.eventName) {
             case 'pull_request':
                 if (contextAction === 'opened') {
+                    console.log(`PR opened`);
                     // await action.addPRLabels([labels.review]);
                 }
                 else if (contextAction === 'closed') {
+                    console.log(`PR closed, removing labels`);
                     yield action.removePRLabels([
                         labels.review,
                         labels.approved,
@@ -138,6 +144,7 @@ class PRFlowAction {
                     ]);
                 }
                 else if (contextAction === 'review_requested') {
+                    console.log("reviewRequested: updating labels");
                     yield action.addPRLabels([labels.review]);
                     yield action.removePRLabels([
                         labels.approved,
@@ -149,22 +156,30 @@ class PRFlowAction {
                     // If PR previously reviewed
                     if (yield action.previouslyReviewed()) {
                         // If PR has changed since last review
+                        console.log("synchronize: updating labels");
                         yield action.addPRLabels([labels.changedSinceLastReview]);
                     }
                 }
                 break;
             case "pull_request_review":
                 // If the review is approved, remove the for-review label
+                console.log("pull_request: updating labels");
                 yield action.removePRLabels([labels.review, labels.changedSinceLastReview]);
                 if (context.payload.review.state === "APPROVED") {
+                    console.log("pull_request_review approved: updating labels");
                     yield action.addPRLabels([labels.approved]);
                 }
                 else if (context.payload.review.state === "CHANGES_REQUESTED") {
+                    console.log("pull_request_review changes_requested: updating labels");
                     // If the review is changes requested, remove the for-review label
                     yield action.addPRLabels([labels.changesRequested]);
                 }
+                else {
+                    console.log(`pull_request_review other state: ${context.payload.review.state}`);
+                }
                 break;
             default:
+                console.log(`Unknown event: ${context.eventName}`);
                 // core.setFailed(`Unsupported event: ${context.eventName}`);
                 break;
         }
