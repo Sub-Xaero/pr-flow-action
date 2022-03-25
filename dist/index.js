@@ -120,7 +120,7 @@ try {
     let action = new PRFlowAction();
     let context = action.context;
     let contextEvent = context.eventName;
-    let contextAction = context.eventName;
+    let contextAction = context.payload.action;
     // Get the labels to use from the inputs
     let labels = {
         review: core.getInput("reviewLabel"),
@@ -128,7 +128,7 @@ try {
         changesRequested: core.getInput("changesRequestedLabel"),
         changedSinceLastReview: core.getInput("changedSinceLastReviewLabel"),
     };
-    console.log(`context: ${JSON.stringify(context)}`);
+    // console.log(`context: ${JSON.stringify(context)}`);
     console.log(`contextEvent: ${contextEvent}, contextAction: ${contextAction}`);
     switch (contextEvent) {
         case 'pull_request':
