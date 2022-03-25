@@ -1,6 +1,9 @@
 name: 'PR Flow'
 description: 'Manage various PR interactions'
 inputs:
+  token:
+    required: true
+    description: 'GitHub token with repo scope'
   reviewLabel:
     required: true
     description: 'Label to apply to PRs that are ready for review'
