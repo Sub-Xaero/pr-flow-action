@@ -128,6 +128,7 @@ try {
         changesRequested: core.getInput("changesRequestedLabel"),
         changedSinceLastReview: core.getInput("changedSinceLastReviewLabel"),
     };
+    console.log(`context: ${JSON.stringify(context)}`);
     console.log(`contextEvent: ${contextEvent}, contextAction: ${contextAction}`);
     switch (contextEvent) {
         case 'pull_request':
