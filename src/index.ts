@@ -92,74 +92,99 @@ class PRFlowAction {
 
 console.log(`Booting...`);
 
-(async () => {
-  try {
-    let action = new PRFlowAction();
-    let context = action.context;
-    let contextAction = context.action;
+try {
+  let action = new PRFlowAction();
+  let context = action.context;
+  let contextEvent = context.eventName;
+  let contextAction = context.action;
 
-    // Get the labels to use from the inputs
-    let labels = {
-      review: core.getInput("reviewLabel"),
-      approved: core.getInput("approvedLabel"),
-      changesRequested: core.getInput("changesRequestedLabel"),
-      changedSinceLastReview: core.getInput("changedSinceLastReviewLabel"),
-    };
+  // Get the labels to use from the inputs
+  let labels = {
+    review: core.getInput("reviewLabel"),
+    approved: core.getInput("approvedLabel"),
+    changesRequested: core.getInput("changesRequestedLabel"),
+    changedSinceLastReview: core.getInput("changedSinceLastReviewLabel"),
+  };
 
-    switch (context.eventName) {
-      case 'pull_request':
-        if (contextAction === 'opened') {
-          console.log(`PR opened`);
-          // await action.addPRLabels([labels.review]);
-        } else if (contextAction === 'closed') {
-          console.log(`PR closed, removing labels`);
-          await action.removePRLabels([
-            labels.review,
-            labels.approved,
-            labels.changesRequested,
-            labels.changedSinceLastReview,
-          ]);
-        } else if (contextAction === 'review_requested') {
-          console.log("reviewRequested: updating labels");
-          await action.addPRLabels([labels.review]);
-          await action.removePRLabels([
-            labels.approved,
-            labels.changesRequested,
-            labels.changedSinceLastReview,
-          ]);
+  console.log(`contextEvent: ${contextEvent}, contextAction: ${contextAction}`);
+  switch (context.eventName) {
+    case 'pull_request':
+      if (contextAction === 'opened') {
+        console.log(`PR opened`);
+        // await action.addPRLabels([labels.review]);
+      } else if (contextAction === 'closed') {
 
-        } else if (contextAction == "synchronize") {
-          // If PR previously reviewed
-          if (await action.previouslyReviewed()) {
+        console.log(`PR closed, removing labels`);
+        action.removePRLabels([
+          labels.review,
+          labels.approved,
+          labels.changesRequested,
+          labels.changedSinceLastReview,
+        ])
+          .then(() => console.log(`PR closed, labels removed`))
+          .catch(() => core.setFailed(`Failed to remove labels`));
+
+      } else if (contextAction === 'review_requested') {
+        console.log("reviewRequested: updating labels");
+
+        action.addPRLabels([labels.review])
+          .then(() => console.log(`reviewRequested: labels updated`))
+          .catch(() => core.setFailed(`Failed to update labels`));
+
+        action.removePRLabels([
+          labels.approved,
+          labels.changesRequested,
+          labels.changedSinceLastReview,
+        ]).then(() => {
+          console.log(`reviewRequested: labels removed`);
+        }).catch(() => core.setFailed(`Failed to remove labels`));
+
+      } else if (contextAction == "synchronize") {
+        // If PR previously reviewed
+        console.log("synchronize");
+        action.previouslyReviewed().then((reviewed) => {
+          if (reviewed) {
             // If PR has changed since last review
             console.log("synchronize: updating labels");
-            await action.addPRLabels([labels.changedSinceLastReview]);
+            action.addPRLabels([labels.changedSinceLastReview])
+              .then(() => console.log(`synchronize: labels updated`))
+              .catch(() => core.setFailed(`Failed to update labels`));
           }
-        }
-        break;
-      case "pull_request_review":
-        // If the review is approved, remove the for-review label
-        console.log("pull_request: updating labels");
-        await action.removePRLabels([labels.review, labels.changedSinceLastReview]);
-        if (context.payload.review.state === "APPROVED") {
-          console.log("pull_request_review approved: updating labels");
-          await action.addPRLabels([labels.approved]);
-        } else if (context.payload.review.state === "CHANGES_REQUESTED") {
-          console.log("pull_request_review changes_requested: updating labels");
-          // If the review is changes requested, remove the for-review label
-          await action.addPRLabels([labels.changesRequested]);
-        } else {
-          console.log(`pull_request_review other state: ${context.payload.review.state}`);
-        }
-        break;
-      default:
-        console.log(`Unknown event: ${context.eventName}`);
-        // core.setFailed(`Unsupported event: ${context.eventName}`);
-        break;
-    }
+        });
+      }
+      break;
+    case "pull_request_review":
+      // If the review is approved, remove the for-review label
+      console.log("pull_request: updating labels");
+      action.removePRLabels([labels.review, labels.changedSinceLastReview])
+        .then(() => console.log(`pull_request: labels removed`))
+        .catch(() => core.setFailed(`Failed to remove labels`));
 
-  } catch (error: any) {
-    core.setFailed(error.message);
+      if (context.payload.review.state === "APPROVED") {
+        console.log("pull_request_review approved: updating labels");
+        action.addPRLabels([labels.approved])
+          .then(() => console.log(`pull_request_review approved: labels updated`))
+          .catch(() => core.setFailed(`Failed to update labels`));
+
+
+      } else if (context.payload.review.state === "CHANGES_REQUESTED") {
+        console.log("pull_request_review changes_requested: updating labels");
+
+        // If the review is changes requested, remove the for-review label
+        action.addPRLabels([labels.changesRequested])
+          .then(() => console.log(`pull_request_review changes_requested: labels updated`))
+          .catch(() => core.setFailed(`Failed to update labels`));
+      } else {
+        console.log(`pull_request_review other state: ${context.payload.review.state}`);
+      }
+      break;
+    default:
+      console.log(`Unknown event: ${context.eventName}`);
+      // core.setFailed(`Unsupported event: ${context.eventName}`);
+      break;
   }
 
-})();
+} catch (error: any) {
+  core.setFailed(error.message);
+}
+
