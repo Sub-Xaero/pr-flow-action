@@ -3,8 +3,9 @@ import {PRFlowAction} from "../prFlowAction";
 
 export async function handlePullRequestEvent(action: PRFlowAction) {
   let context = action.context;
+  let {action: contextAction} = context.payload;
 
-  let {action: contextAction} = context;
+  console.log(`pull_request ${contextAction} event`);
 
   if (contextAction === 'opened') {
     console.log(`PR opened`);

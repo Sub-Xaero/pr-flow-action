@@ -14,7 +14,8 @@ const labelling_1 = require("../labelling");
 function handlePullRequestEvent(action) {
     return __awaiter(this, void 0, void 0, function* () {
         let context = action.context;
-        let { action: contextAction } = context;
+        let { action: contextAction } = context.payload;
+        console.log(`pull_request ${contextAction} event`);
         if (contextAction === 'opened') {
             console.log(`PR opened`);
             (0, labelling_1.addLabels)(action, [labelling_1.labels.inProgress]);
