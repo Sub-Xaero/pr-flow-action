@@ -16,6 +16,9 @@ inputs:
   changedSinceLastReviewLabel:
     required: true
     description: 'Label to apply to PRs that have changed since the last review'
+  inProgressLabel:
+    required: true
+    description: 'Label to apply to PRs that are in progress'
 runs:
   using: 'node16'
   main: 'dist/index.js'
