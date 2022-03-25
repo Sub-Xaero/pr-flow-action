@@ -96,7 +96,7 @@ try {
   let action = new PRFlowAction();
   let context = action.context;
   let contextEvent = context.eventName;
-  let contextAction = context.action;
+  let contextAction = context.eventName;
 
   // Get the labels to use from the inputs
   let labels = {
@@ -107,7 +107,7 @@ try {
   };
 
   console.log(`contextEvent: ${contextEvent}, contextAction: ${contextAction}`);
-  switch (context.eventName) {
+  switch (contextEvent) {
     case 'pull_request':
       if (contextAction === 'opened') {
         console.log(`PR opened`);
