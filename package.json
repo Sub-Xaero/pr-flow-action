@@ -1,6 +1,6 @@
 {
   "name": "pr-flow-action",
-  "version": "0.2",
+  "version": "0.2.1",
   "main": "dist/index.js",
   "author": "Sub-Xaero",
   "license": "MIT",
