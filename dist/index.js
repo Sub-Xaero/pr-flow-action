@@ -137,6 +137,14 @@ class PRFlowAction {
                         labels.changedSinceLastReview,
                     ]);
                 }
+                else if (contextAction === 'review_requested') {
+                    yield action.addPRLabels([labels.review]);
+                    yield action.removePRLabels([
+                        labels.approved,
+                        labels.changesRequested,
+                        labels.changedSinceLastReview,
+                    ]);
+                }
                 else if (contextAction == "synchronize") {
                     // If PR previously reviewed
                     if (yield action.previouslyReviewed()) {

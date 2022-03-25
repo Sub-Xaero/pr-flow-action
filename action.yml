@@ -18,4 +18,4 @@ inputs:
     description: 'Label to apply to PRs that have changed since the last review'
 runs:
   using: 'node16'
-  main: 'index.ts'
+  main: 'dist/index.js'
