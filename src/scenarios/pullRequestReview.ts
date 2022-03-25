@@ -2,11 +2,11 @@ import {addLabels, labels, removeLabels} from "../labelling";
 import {PRFlowAction} from "../prFlowAction";
 
 export function applyReviewState(action: PRFlowAction, state: string) {
-  if (state === "APPROVED") {
+  if (state === "approved") {
     console.log("pull_request_review approved: updating labels");
     addLabels(action, [labels.approved]);
 
-  } else if (state === "CHANGES_REQUESTED") {
+  } else if (state === "changes_requested") {
     console.log("pull_request_review changes_requested: updating labels");
     addLabels(action, [labels.changesRequested]);
 

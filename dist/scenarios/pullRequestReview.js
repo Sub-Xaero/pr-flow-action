@@ -12,11 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handlePullRequestReviewEvent = exports.applyReviewState = void 0;
 const labelling_1 = require("../labelling");
 function applyReviewState(action, state) {
-    if (state === "APPROVED") {
+    if (state === "approved") {
         console.log("pull_request_review approved: updating labels");
         (0, labelling_1.addLabels)(action, [labelling_1.labels.approved]);
     }
-    else if (state === "CHANGES_REQUESTED") {
+    else if (state === "changes_requested") {
         console.log("pull_request_review changes_requested: updating labels");
         (0, labelling_1.addLabels)(action, [labelling_1.labels.changesRequested]);
     }
