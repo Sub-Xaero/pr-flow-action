@@ -1,7 +1,7 @@
 {
   "name": "pr-flow-action",
   "version": "0.1",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "author": "Sub-Xaero",
   "license": "MIT",
   "private": true,
