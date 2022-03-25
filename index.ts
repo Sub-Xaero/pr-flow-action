@@ -112,6 +112,14 @@ class PRFlowAction {
             labels.changesRequested,
             labels.changedSinceLastReview,
           ]);
+        } else if (contextAction === 'review_requested') {
+          await action.addPRLabels([labels.review]);
+          await action.removePRLabels([
+            labels.approved,
+            labels.changesRequested,
+            labels.changedSinceLastReview,
+          ]);
+
         } else if (contextAction == "synchronize") {
           // If PR previously reviewed
           if (await action.previouslyReviewed()) {
