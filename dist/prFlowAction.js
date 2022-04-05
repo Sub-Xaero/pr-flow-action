@@ -60,6 +60,26 @@ class PRFlowAction {
         const token = core.getInput("token");
         this.octokit = github.getOctokit(token);
     }
+    getRequestedReviewers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const reviewers = yield this.octokit.rest.pulls.listRequestedReviewers({
+                owner: this.repoOwner,
+                repo: this.repoName,
+                pull_number: this.pullRequestNumber,
+            });
+            return reviewers.data;
+        });
+    }
+    getPullRequest() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const pull = yield this.octokit.rest.pulls.get({
+                owner: this.repoOwner,
+                repo: this.repoName,
+                pull_number: this.pullRequestNumber,
+            });
+            return pull.data;
+        });
+    }
     getReviews() {
         return __awaiter(this, void 0, void 0, function* () {
             const reviews = yield this.octokit.rest.pulls.listReviews({

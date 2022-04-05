@@ -38,6 +38,24 @@ export class PRFlowAction {
     this.octokit = github.getOctokit(token);
   }
 
+  async getRequestedReviewers() {
+    const reviewers = await this.octokit.rest.pulls.listRequestedReviewers({
+      owner: this.repoOwner,
+      repo: this.repoName,
+      pull_number: this.pullRequestNumber,
+    });
+    return reviewers.data;
+  }
+
+  async getPullRequest() {
+    const pull = await this.octokit.rest.pulls.get({
+      owner: this.repoOwner,
+      repo: this.repoName,
+      pull_number: this.pullRequestNumber,
+    });
+    return pull.data;
+  }
+
   async getReviews(): Promise<any[]> {
     const reviews = await this.octokit.rest.pulls.listReviews({
       owner: this.repoOwner,

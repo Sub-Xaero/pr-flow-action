@@ -18,7 +18,10 @@ function handlePullRequestEvent(action) {
         console.log(`pull_request ${contextAction} event`);
         if (contextAction === 'opened') {
             console.log(`PR opened`);
-            (0, labelling_1.addLabels)(action, [labelling_1.labels.inProgress]);
+            let pr = yield action.getPullRequest();
+            if (pr.title.includes('[WIP]')) {
+                yield (0, labelling_1.addLabels)(action, [labelling_1.labels.inProgress]);
+            }
         }
         else if (contextAction === 'reopened') {
             //
@@ -28,6 +31,7 @@ function handlePullRequestEvent(action) {
             (0, labelling_1.removeAllLabels)(action);
         }
         else if (contextAction === 'ready_for_review') {
+            (0, labelling_1.removeLabels)(action, [labelling_1.labels.inProgress]);
             (0, labelling_1.addLabels)(action, [labelling_1.labels.review]);
         }
         else if (contextAction === 'closed') {
@@ -35,14 +39,22 @@ function handlePullRequestEvent(action) {
             (0, labelling_1.removeAllLabels)(action);
         }
         else if (contextAction === 'review_requested') {
-            console.log("reviewRequested: updating labels");
+            console.log("Review requested: updating labels");
             (0, labelling_1.addLabels)(action, [labelling_1.labels.review]);
-            (0, labelling_1.removeLabels)(action, [labelling_1.labels.approved, labelling_1.labels.changesRequested,]);
+            (0, labelling_1.removeLabels)(action, [labelling_1.labels.approved, labelling_1.labels.changesRequested]);
+        }
+        else if (contextAction === 'review_request_removed') {
+            console.log("Review request removed: updating labels");
+            let reviewers = yield action.getRequestedReviewers();
+            if ([...reviewers.users, ...reviewers.teams].length === 0) {
+                console.log("Review request: no active reviewers, removing labels");
+                (0, labelling_1.removeLabels)(action, [labelling_1.labels.review]);
+            }
         }
         else if (contextAction == "synchronize") {
-            console.log("synchronize");
+            console.log("Synchronize: updating labels");
             if (yield action.previouslyReviewed()) {
-                console.log("synchronize: updating labels");
+                console.log("Synchronize: Previously reviewed, show changed since last review");
                 (0, labelling_1.addLabels)(action, [labelling_1.labels.changedSinceLastReview]);
             }
         }
